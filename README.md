@@ -1,6 +1,6 @@
 # NSR-AI Open-Source API
 
-![Version](https://img.shields.io/badge/Version-1.2.1--Beta-blue.svg)
+![Version](https://img.shields.io/badge/Version-1.5--Beta-blue.svg)
 
 This is the official open-source API for the NSR-AI Minecraft Plugin. It allows developers to interact with core NSR-AI functionalities in a safe and controlled manner.
 

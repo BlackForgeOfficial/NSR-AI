@@ -7,7 +7,7 @@
 
   <groupId>com.nsr-ai</groupId>
   <artifactId>nsr-ai-api</artifactId>
-  <version>1.5-Beta</version>
+  <version>1.5-pre</version>
   <packaging>jar</packaging>
 
   <name>NSR-AI API</name>

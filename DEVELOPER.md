@@ -278,6 +278,13 @@ import java.util.HashMap;
 
 public class MySimpleAddon implements AIAddon {
 
+    private boolean active = true; // Example: Addon is active by default
+    private String inactiveReason = ""; // Example: No reason initially
+    private final String apiVersion = "1.2"; // Example: API version this addon is built for
+    private final String mainClass = "com.example.myaddon.MySimpleAddon"; // Example: Main class of the addon
+    private final String loadedAt = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()); // Example: Timestamp when loaded
+    private final String fileName = "MySimpleAddon-1.0.jar"; // Example: File name of the addon JAR
+
     /**
      * Called when your addon is enabled by the NSR-AI core plugin.
      * Perform initialization logic here (e.g., registering event listeners).
@@ -298,6 +305,8 @@ public class MySimpleAddon implements AIAddon {
     @Override
     public void onDisable() {
         NSRaiAPI.getLogger().info(getName() + " v" + getVersion() + " by " + getAuthor() + " disabled!");
+        this.active = false; // Mark as inactive
+        this.inactiveReason = "Addon disabled by server.";
     }
 
     /** Returns the official name of your addon. */
@@ -353,6 +362,42 @@ public class MySimpleAddon implements AIAddon {
         Map<String, String> features = new HashMap<>();
         features.put("simple-greeting", "Provides a basic greeting command for demonstration.");
         return features;
+    }
+
+    /** Returns true if the addon is currently active and loaded. */
+    @Override
+    public boolean isActive() {
+        return this.active;
+    }
+
+    /** Returns the API version this addon is built against. */
+    @Override
+    public String getApiVersion() {
+        return this.apiVersion;
+    }
+
+    /** Returns the fully qualified main class name of the addon. */
+    @Override
+    public String getMainClass() {
+        return this.mainClass;
+    }
+
+    /** Returns the timestamp when the addon was loaded. */
+    @Override
+    public String getLoadedAt() {
+        return this.loadedAt;
+    }
+
+    /** Returns the file name of the addon JAR. */
+    @Override
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    /** Returns the reason why the addon is inactive, if applicable. */
+    @Override
+    public String getInactiveReason() {
+        return this.inactiveReason;
     }
 }
 ```

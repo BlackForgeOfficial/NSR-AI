@@ -290,7 +290,7 @@ name: MySimpleAddon
 # The current version of your addon. Follow semantic versioning (e.g., 1.0.0, 1.2-BETA).
 version: 1.0
 
-author: Gemini
+author: BlackForge
 
 # A brief description of your addon's functionality.
 # This is displayed in the /ai addon <name> command.

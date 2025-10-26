@@ -1,6 +1,6 @@
 # NSR-AI Open-Source API
 
-![Version](https://img.shields.io/badge/Version-1.6.1--pre-blue.svg)
+![Version](https://img.shields.io/badge/Version-1.2.1--Beta-blue.svg)
 
 This is the official open-source API for the NSR-AI Minecraft Plugin. It allows developers to interact with core NSR-AI functionalities in a safe and controlled manner.
 
@@ -14,7 +14,7 @@ Add the following to your `pom.xml`:
     <dependency>
         <groupId>com.nsr-ai</groupId>
         <artifactId>nsr-ai-api</artifactId>
-        <version>1.6.1-pre</version> <!-- Use the current API version -->
+        <version>1.2.1-Beta2</version> <!-- Use the current API version -->
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -22,13 +22,12 @@ Add the following to your `pom.xml`:
 
 ## Features Available in API Version 2
 
-*   **AIAddon Interface Enhancements:** Addons now implement `getName()`, `getVersion()`, `getAuthor()`, `onEnable(NSRAIPlugin plugin)`, and `onDisable()` for better lifecycle management and information retrieval.
+*   **AIAddon Interface Enhancements:** Addons now implement `getName()`, `getVersion()`, `getAuthor()`, `onEnable(Plugin plugin)`, and `onDisable()` for better lifecycle management and information retrieval.
 *   **Chat System:** Send messages to AI, get AI responses (asynchronous).
 *   **Pet System:** Get pet data, register pet listeners.
 *   **NPC System:** Register NPC listeners, update NPC skins.
 *   **Memory System:** Provides methods to access and update shared memory. (Note: This feature is currently a placeholder and will log warnings upon use).
-*   **Versioning:** Get plugin version and API version.
-*   **GUI System:** (Conditional) Offers functionality to open custom GUIs and register GUI listeners. Calling these methods will throw an an `IllegalStateException` if the GUI system is not enabled in the core plugin.
+*   **Versioning:** Get plugin version.
 *   **Security System:** (Conditional) Provides methods to retrieve the current security status. Calling these methods will throw an `IllegalStateException` if the Security system is not enabled in the core plugin.
 
 ## Example: Addon Structure and Lifecycle
@@ -46,11 +45,8 @@ import org.bukkit.entity.Player;
 
 public class MyAddon extends JavaPlugin implements AIAddon {
 
-    private NSRAIPlugin nsrAiPlugin;
-
     @Override
-    public void onEnable(NSRAIPlugin plugin) {
-        this.nsrAiPlugin = plugin;
+    public void onEnable(Plugin plugin) {
         getLogger().info("MyAddon enabled!");
     }
 

@@ -39,46 +39,11 @@ public class MyAddon extends JavaPlugin {
 }
 ```
 
-## 2. New Enhanced API Features
+## 2. Safely Detecting Missing Features
 
-The expanded NSR-AI Addon API provides powerful new capabilities, allowing for deeper integration and more dynamic addon development:
+The NSR-AI core plugin may not have all features (like specific services) enabled or implemented in every version. The public API is designed to gracefully handle these situations.
 
-*   **Admin Mode Management**: Programmatically toggle and monitor a player's administrative status within NSR-AI.
-    *   `NSRaiAPI.toggleAdminMode(Player player, String activationCode)`
-    *   `NSRaiAPI.isAdminModeEnabled(Player player)`
-
-*   **Advanced GUI Customization**: Register and manage your own custom Graphical User Interfaces.
-    *   `NSRaiAPI.registerCustomGUI(String guiId, CustomGUIProvider provider)` (requires implementing `com.nsr.ai.api.CustomGUIProvider`)
-    *   `NSRaiAPI.openCustomGUI(Player player, String guiId)`
-
-*   **Internal Player States**: Safely access and manage player-specific AI interaction parameters.
-    *   `NSRaiAPI.isPlayerOnCooldown(Player player)`
-    *   `NSRaiAPI.getPlayerCooldownRemaining(Player player)`
-    *   `NSRaiAPI.isAiEnabled(Player player)`
-    *   `NSRaiAPI.setAiEnabled(Player player, boolean enabled)`
-    *   *Note*: The API does not expose raw API keys or allow direct modification of API key limits/providers.
-
-*   **Knowledge Base Direct Manipulation**: Directly interact with NSR-AI's knowledge base.
-    *   `NSRaiAPI.addKnowledgeEntry(String keyword, String heading, String content)`
-    *   `NSRaiAPI.removeKnowledgeEntry(String keyword)`
-    *   `NSRaiAPI.getAllKnowledge()`
-
-*   **Conversation History Control**: Programmatically manage player conversation histories.
-    *   `NSRaiAPI.clearConversationHistory(Player player)`
-    *   `NSRaiAPI.summarizeConversation(Player player)`
-    *   `NSRaiAPI.refreshConversation(Player player)`
-    *   `NSRaiAPI.getConversationHistory(Player player)`
-
-*   **Configuration Reloading**: Trigger reloads of core plugin configurations.
-    *   `NSRaiAPI.reloadMainConfig()`
-    *   `NSRaiAPI.reloadFeaturesConfig()`
-    *   `NSRaiAPI.reloadKnowledgeBase()`
-
-## 3. Safely Detecting Missing Features
-
-The NSR-AI core plugin may not have all features (like GUI or specific services) enabled or implemented in every version. The public API is designed to gracefully handle these situations.
-
-*   **Conditional Features:** Methods for features that might not be present (e.g., `openCustomGUI`, `addKnowledgeEntry` if the knowledge base is disabled) will throw an `IllegalStateException` if the underlying service is not available in the core plugin.
+*   **Conditional Features:** Methods for features that might not be present (e.g., `addKnowledgeEntry` if the knowledge base is disabled) will throw an `IllegalStateException` if the underlying service is not available in the core plugin.
 
 ### Example: Handling Conditional Features
 
@@ -86,63 +51,19 @@ Always wrap calls to conditional features in `try-catch` blocks to prevent your 
 
 ```java
 import com.nsr.ai.api.NSRaiAPI;
-import com.nsr.ai.api.CustomGUIProvider;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-public class MyGUIAddon implements CustomGUIProvider {
+public class MyFeatureAddon {
 
-    private final String GUI_ID = "my_custom_gui";
-
-    public MyGUIAddon() {
+    public void tryAddKnowledge(Player player, String keyword, String content) {
         try {
-            NSRaiAPI.registerCustomGUI(GUI_ID, this);
-            NSRaiAPI.getLogger().info("Custom GUI registered successfully!");
+            NSRaiAPI.addKnowledgeEntry(keyword, "Generated Heading", content);
+            player.sendMessage(ChatColor.GREEN + "Knowledge entry added!");
         } catch (IllegalStateException e) {
-            NSRaiAPI.getLogger().warning("Could not register custom GUI: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public Inventory createInventory(Player player) {
-        Inventory inv = Bukkit.createInventory(null, getSize(), getTitle());
-        // Populate inventory with items
-        inv.setItem(0, new org.bukkit.inventory.ItemStack(org.bukkit.Material.DIAMOND_SWORD));
-        return inv;
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player) {
-            Player player = (Player) event.getWhoClicked();
-            event.setCancelled(true); // Prevent item dragging
-            if (event.getCurrentItem() != null && event.getCurrentItem().getType() == org.bukkit.Material.DIAMOND_SWORD) {
-                player.sendMessage(ChatColor.GREEN + "You clicked the diamond sword!");
-                player.closeInventory();
-            }
-        }
-    }
-
-    @Override
-    public String getTitle() {
-        return ChatColor.BLUE + "My Custom Addon GUI";
-    }
-
-    @Override
-    public int getSize() {
-        return 9; // Must be a multiple of 9
-    }
-
-    public void tryOpenGUI(Player player) {
-        try {
-            NSRaiAPI.openCustomGUI(player, GUI_ID);
-            player.sendMessage(ChatColor.GREEN + "Opened custom GUI!");
-        } catch (IllegalStateException e) {
-            player.sendMessage(ChatColor.RED + "NSR-AI GUI System is not supported by this core version or GUI not registered.");
-            NSRaiAPI.getLogger().warning("Could not open GUI: " + e.getMessage());
+            player.sendMessage(ChatColor.RED + "NSR-AI Knowledge Base is not supported by this core version or is disabled.");
+            NSRaiAPI.getLogger().warning("Could not add knowledge entry: " + e.getMessage());
         }
     }
 }
@@ -173,7 +94,7 @@ public class MyPetHelper {
 }
 ```
 
-## 4. Asynchronous Operations
+## 3. Asynchronous Operations
 
 All AI-related operations (e.g., `sendMessageToAI`, `getAIResponse`) are asynchronous and return `CompletableFuture`. This prevents your addon from blocking the main server thread, ensuring a smooth player experience.
 
@@ -278,13 +199,6 @@ import java.util.HashMap;
 
 public class MySimpleAddon implements AIAddon {
 
-    private boolean active = true; // Example: Addon is active by default
-    private String inactiveReason = ""; // Example: No reason initially
-    private final String apiVersion = "1.2"; // Example: API version this addon is built for
-    private final String mainClass = "com.example.myaddon.MySimpleAddon"; // Example: Main class of the addon
-    private final String loadedAt = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()); // Example: Timestamp when loaded
-    private final String fileName = "MySimpleAddon-1.0.jar"; // Example: File name of the addon JAR
-
     /**
      * Called when your addon is enabled by the NSR-AI core plugin.
      * Perform initialization logic here (e.g., registering event listeners).
@@ -305,8 +219,6 @@ public class MySimpleAddon implements AIAddon {
     @Override
     public void onDisable() {
         NSRaiAPI.getLogger().info(getName() + " v" + getVersion() + " by " + getAuthor() + " disabled!");
-        this.active = false; // Mark as inactive
-        this.inactiveReason = "Addon disabled by server.";
     }
 
     /** Returns the official name of your addon. */
@@ -351,53 +263,13 @@ public class MySimpleAddon implements AIAddon {
     /** Returns a map of commands provided by your addon. */
     @Override
     public Map<String, String> getCommands() {
-        Map<String, String> commands = new HashMap<>();
-        commands.put("myaddon hello", "Says hello from the addon.");
-        return commands;
+        return new HashMap<>();
     }
 
     /** Returns a map of features provided by your addon. */
     @Override
     public Map<String, String> getFeatures() {
-        Map<String, String> features = new HashMap<>();
-        features.put("simple-greeting", "Provides a basic greeting command for demonstration.");
-        return features;
-    }
-
-    /** Returns true if the addon is currently active and loaded. */
-    @Override
-    public boolean isActive() {
-        return this.active;
-    }
-
-    /** Returns the API version this addon is built against. */
-    @Override
-    public String getApiVersion() {
-        return this.apiVersion;
-    }
-
-    /** Returns the fully qualified main class name of the addon. */
-    @Override
-    public String getMainClass() {
-        return this.mainClass;
-    }
-
-    /** Returns the timestamp when the addon was loaded. */
-    @Override
-    public String getLoadedAt() {
-        return this.loadedAt;
-    }
-
-    /** Returns the file name of the addon JAR. */
-    @Override
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    /** Returns the reason why the addon is inactive, if applicable. */
-    @Override
-    public String getInactiveReason() {
-        return this.inactiveReason;
+        return new HashMap<>();
     }
 }
 ```
@@ -413,14 +285,11 @@ Here's an example `addon.yml` and a detailed explanation of each field:
 # This file must be located in your addon's src/main/resources directory.
 
 # The official name of your addon. This should be unique and descriptive.
-# It is displayed in the /ai addon list command.
 name: MySimpleAddon
 
 # The current version of your addon. Follow semantic versioning (e.g., 1.0.0, 1.2-BETA).
-# It is displayed in the /ai addon list command.
 version: 1.0
 
-# The author(s) of the addon. This is displayed in the /ai addon list command.
 author: Gemini
 
 # A brief description of your addon's functionality.

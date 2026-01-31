@@ -1,0 +1,29 @@
+name: 💡 Feature Request
+description: Suggest an idea or improvement for NSR-AI
+title: "[FEATURE] - "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 💡 Feature Idea
+        Describe the new capability you'd like to see added.
+  - type: textarea
+    id: solution
+    attributes:
+      label: 🛠 Proposed Solution
+      description: How should this work?
+      placeholder: I want the AI to be able to...
+    validations:
+      required: true
+  - type: textarea
+    id: usecase
+    attributes:
+      label: 🌟 Use Case
+      description: How would this improve gameplay or server management?
+  - type: textarea
+    id: context
+    attributes:
+      label: 🗒 Additional Context
+      description: Add any other screenshots or details here.

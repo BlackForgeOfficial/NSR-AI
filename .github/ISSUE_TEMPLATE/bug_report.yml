@@ -1,0 +1,40 @@
+name: 🐞 Bug Report
+description: Report a problem or error in NSR-AI
+title: "[BUG] - "
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 📝 Description
+        Provide a clear and concise description of what the bug is.
+  - type: input
+    id: environment
+    attributes:
+      label: ⚙️ Server Environment
+      placeholder: e.g., Paper 1.21.1, NSR-AI 1.3, Gemini API
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🚀 Steps to Reproduce
+      description: How did you encounter this bug?
+      placeholder: |
+        1. Start the server
+        2. Type /ai hello
+        3. See error in console
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📂 Logs & Screenshots
+      description: Please paste your `latest.log` or error snippets here.
+      placeholder: Paste console output here...
+  - type: textarea
+    id: expected
+    attributes:
+      label: 🎯 Expected Behavior
+      description: What should have happened?

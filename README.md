@@ -23,9 +23,9 @@ Add the following to your `pom.xml`:
 ## Features Available in API Version 2
 
 *   **AIAddon Interface Enhancements:** Addons now implement `getName()`, `getVersion()`, `getAuthor()`, `onEnable(Plugin plugin)`, and `onDisable()` for better lifecycle management and information retrieval.
-*   **Chat System:** Send messages to AI, get AI responses (asynchronous).
-*   **Pet System:** Get pet data, register pet listeners.
-*   **NPC System:** Register NPC listeners, update NPC skins.
+*   **Chat System:** Send messages to AI, get AI responses (asynchronous). (properly working)
+*   **Pet System:** Get pet data, register pet listeners. (Experiment)
+*   **NPC System:** Register NPC listeners, update NPC skins. (Experiment)
 *   **Memory System:** Provides methods to access and update shared memory. (Note: This feature is currently a placeholder and will log warnings upon use).
 *   **Versioning:** Get plugin version.
 *   **Security System:** (Conditional) Provides methods to retrieve the current security status. Calling these methods will throw an `IllegalStateException` if the Security system is not enabled in the core plugin.
